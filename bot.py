@@ -22,12 +22,13 @@ with open("wal.log", "a+") as wal:
 
 VERIFICATION_THRESHHOLD = 10
 VERIFIED_ROLE_ID = 1128559850373271592
+VERIFIED_CHANNEL_ID = 1128570281372434442
 TOKEN = ""
 
 
 @bot.event
 async def on_reaction_add(reaction: Reaction, user: Member):
-    if user.id == reaction.message.author.id or reaction.emoji.name != "white_check_mark":
+    if user.id == reaction.message.author.id or reaction.emoji.name != "white_check_mark" or reaction.message.channel.id != VERIFIED_CHANNEL_ID:
         return
 
     if agreed := verification_db.get(user.id, False):
