@@ -1,0 +1,7 @@
+version: '3'
+services:
+  myapp:
+    build: .
+    image: voting_verification_bot
+    volumes:
+      - ./wal.log:/usr/src/app/wal.log
