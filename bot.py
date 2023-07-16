@@ -42,8 +42,9 @@ async def on_reaction_add(reaction: Reaction, user: Member):
 
     # simple write-ahead log that allows us to recover state if the application crashes
     print(f"{time.time()},{verification_db}")
-    with open("wal.log", "a+") as wal:
+    with open("./wal.log", "a+") as wal:
         wal.write(f"{time.time()},{verification_db}\n")
+
 
 @tasks.loop(minutes=60)
 async def check_verified_count():
