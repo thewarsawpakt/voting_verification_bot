@@ -7,7 +7,6 @@ You should have received a copy of the GNU General Public License along with thi
 from discord.ext import commands, tasks
 from discord import Intents, Member, Reaction, Activity, ActivityType, Status, RawReactionActionEvent
 from ast import literal_eval
-import time
 import os
 
 bot = commands.Bot(command_prefix=".", intents=Intents.default())
@@ -21,10 +20,10 @@ with open("wal.log", "a+") as wal:
         verification_db = {}
 
 
-VERIFIED_ROLE_ID = 1128559850373271592
-VERIFICATION_CHANNEL_ID = 1128570281372434442
-GUILD_ID = 1001876487059816542
-BOT_COUNT = 8
+VERIFIED_ROLE_ID = os.environ.get("VERIFIED_ROLE_ID")
+VERIFICATION_CHANNEL_ID = os.environ.get("VERIFICATION_CHANNEL_ID")
+GUILD_ID = os.environ.get("GUILD_ID")
+BOT_COUNT = os.environ.get("BOT_COUNT")
 
 # calculate the verification threshhold as a function of guild size
 verification_threshold = lambda _: (bot.get_guild(GUILD_ID).member_count - BOT_COUNT) // 5
@@ -53,7 +52,7 @@ async def check_verified_count():
     # check every 60 minutes to see which users should be verified
     for (user_id, count) in enumerate(verification_db):
         if count >= verification_threshold():
-            member = bot.get_guild(1001876487059816542).get_member(user_id)
+            member = bot.get_guild(GUILD_ID).get_member(user_id)
             member.add_roles([VERIFIED_ROLE_ID], reason=f"Verified after {count} agreements")
 
 bot.run(os.environ.get("TOKEN"))
