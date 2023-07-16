@@ -5,7 +5,7 @@ You should have received a copy of the GNU General Public License along with thi
 """
 
 from discord.ext import commands, tasks
-from discord import Intents, Member, Reaction, Activity, ActivityType
+from discord import Intents, Member, Reaction, Activity, ActivityType, Status
 from ast import literal_eval
 import time
 import os
@@ -32,7 +32,7 @@ verification_threshold = lambda _: bot.get_guild(GUILD_ID).member_count // 5
 @bot.event
 async def on_ready():
     print("bot is ready")
-    await bot.change_presence(activity=Activity(name="for your verification.", type=ActivityType.listening))
+    await bot.change_presence(activity=Activity(name="for your verification.", type=ActivityType.listening), status=Status.idle)
 
 @bot.event
 async def on_reaction_add(reaction: Reaction, user: Member):
