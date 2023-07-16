@@ -45,7 +45,7 @@ async def on_raw_reaction_add(reaction: RawReactionActionEvent):
 
     # simple write-ahead log that allows us to recover state if the application crashes
     with open("./wal.log", "a+") as wal:
-        wal.write(f"{time.time()},{verification_db}\n")
+        wal.write(f"{verification_db}\n")
 
 
 @tasks.loop(minutes=60)
