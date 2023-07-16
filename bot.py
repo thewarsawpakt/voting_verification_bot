@@ -5,7 +5,7 @@ You should have received a copy of the GNU General Public License along with thi
 """
 
 from discord.ext import commands, tasks
-from discord import Intents, Member, Reaction, Activity, ActivityType, Status
+from discord import Intents, Member, Reaction, Activity, ActivityType, Status, RawReactionActionEvent
 from ast import literal_eval
 import time
 import os
@@ -23,7 +23,7 @@ with open("wal.log", "a+") as wal:
 
 # VERIFICATION_THRESHOLD = 10
 VERIFIED_ROLE_ID = 1128559850373271592
-VERIFIED_CHANNEL_ID = 1128570281372434442
+VERIFICATION_CHANNEL_ID = 1128570281372434442
 GUILD_ID = 1001876487059816542
 
 # calculate the verification threshhold as a function of guild size
@@ -31,21 +31,19 @@ verification_threshold = lambda _: bot.get_guild(GUILD_ID).member_count // 5
 
 @bot.event
 async def on_ready():
-    print("bot is ready")
-    await bot.change_presence(activity=Activity(name="for your verification.", type=ActivityType.listening), status=Status.idle)
+    await bot.change_presence(activity=Activity(name="your verification requests.", type=ActivityType.listening), status=Status.idle)
 
 @bot.event
-async def on_reaction_add(reaction: Reaction, user: Member):
-    if user.id == reaction.message.author.id or reaction.emoji.name != "white_check_mark" or reaction.message.channel.id != VERIFIED_CHANNEL_ID:
+async def on_raw_reaction_add(reaction: RawReactionActionEvent):
+    if reaction.emoji.name != "✅" or reaction.channel_id != VERIFICATION_CHANNEL_ID or reaction.member.id == reaction.message_author_id:
         return
 
-    if agreed := verification_db.get(user.id, False):
-        verification_db[user.id] += 1
+    if agreed := verification_db.get(reaction.member.id, False):
+        verification_db[reaction.member.id] += 1
     else:
-        verification_db[user.id] = 1
+        verification_db[reaction.member.id] = 1
 
     # simple write-ahead log that allows us to recover state if the application crashes
-    print(f"{time.time()},{verification_db}")
     with open("./wal.log", "a+") as wal:
         wal.write(f"{time.time()},{verification_db}\n")
 
