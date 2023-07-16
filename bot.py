@@ -33,10 +33,10 @@ async def on_raw_reaction_add(reaction: RawReactionActionEvent):
     if reaction.emoji.name != "✅" or reaction.channel_id != VERIFICATION_CHANNEL_ID or reaction.member.id == reaction.message_author_id:
         return
 
-    if agreed := verification_db.get(reaction.member.id, False):
-        verification_db[reaction.message_author_id.id] += 1
+    if agreed := verification_db.get(reaction.member, False):
+        verification_db[reaction.message_author_id] += 1
     else:
-        verification_db[reaction.message_author_id.id] = 1
+        verification_db[reaction.message_author_id] = 1
 
     # simple write-ahead log that allows us to recover state if the application crashes
     with open("./wal.log", "a+") as wal:
