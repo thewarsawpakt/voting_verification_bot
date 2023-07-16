@@ -21,6 +21,8 @@ BOT_COUNT = os.environ.get("BOT_COUNT")
 
 # calculate the verification threshhold as a function of guild size
 verification_threshold = lambda _: (bot.get_guild(GUILD_ID).member_count - BOT_COUNT) // 5
+env = lambda v: os.environ.get(v, None)
+
 
 @bot.event
 async def on_ready():
@@ -32,9 +34,9 @@ async def on_raw_reaction_add(reaction: RawReactionActionEvent):
         return
 
     if agreed := verification_db.get(reaction.member.id, False):
-        verification_db[reaction.member.id] += 1
+        verification_db[reaction.message_author_id.id] += 1
     else:
-        verification_db[reaction.member.id] = 1
+        verification_db[reaction.message_author_id.id] = 1
 
     # simple write-ahead log that allows us to recover state if the application crashes
     with open("./wal.log", "a+") as wal:
