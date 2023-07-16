@@ -21,13 +21,13 @@ with open("wal.log", "a+") as wal:
         verification_db = {}
 
 
-# VERIFICATION_THRESHOLD = 10
 VERIFIED_ROLE_ID = 1128559850373271592
 VERIFICATION_CHANNEL_ID = 1128570281372434442
 GUILD_ID = 1001876487059816542
+BOT_COUNT = 8
 
 # calculate the verification threshhold as a function of guild size
-verification_threshold = lambda _: bot.get_guild(GUILD_ID).member_count // 5
+verification_threshold = lambda _: (bot.get_guild(GUILD_ID).member_count - BOT_COUNT) // 5
 
 @bot.event
 async def on_ready():
