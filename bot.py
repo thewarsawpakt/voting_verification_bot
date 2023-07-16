@@ -8,6 +8,7 @@ from discord.ext import commands, tasks
 from discord import Intents, Member, Reaction
 from ast import literal_eval
 import time
+import os
 
 bot = commands.Bot(command_prefix=".", intents=Intents.default())
 
@@ -24,7 +25,6 @@ with open("wal.log", "a+") as wal:
 VERIFIED_ROLE_ID = 1128559850373271592
 VERIFIED_CHANNEL_ID = 1128570281372434442
 GUILD_ID = 1001876487059816542
-TOKEN = ""
 
 # calculate the verification threshhold as a function of guild size
 verification_threshold = lambda _: bot.get_guild(GUILD_ID).member_count // 5
@@ -41,7 +41,7 @@ async def on_reaction_add(reaction: Reaction, user: Member):
         verification_db[user.id] = 1
 
     # simple write-ahead log that allows us to recover state if the application crashes
-    print(f"{time.time()},{verification_db}\n")
+    print(f"{time.time()},{verification_db}")
     with open("wal.log", "a+") as wal:
         wal.write(f"{time.time()},{verification_db}\n")
 
@@ -53,4 +53,4 @@ async def check_verified_count():
             member = bot.get_guild(1001876487059816542).get_member(user_id)
             member.add_roles([VERIFIED_ROLE_ID], reason=f"Verified after {count} agreements")
 
-bot.run(TOKEN)
+bot.run(os.environ.get("TOKEN"))
