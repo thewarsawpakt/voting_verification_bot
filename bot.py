@@ -20,10 +20,14 @@ with open("wal.log", "a+") as wal:
         verification_db = {}
 
 
-VERIFICATION_THRESHHOLD = 10
+# VERIFICATION_THRESHOLD = 10
 VERIFIED_ROLE_ID = 1128559850373271592
 VERIFIED_CHANNEL_ID = 1128570281372434442
+GUILD_ID = 1001876487059816542
 TOKEN = ""
+
+# calculate the verification threshhold as a function of guild size
+verification_threshold = lambda _: bot.get_guild(GUILD_ID).member_count // 5
 
 
 @bot.event
@@ -44,7 +48,7 @@ async def on_reaction_add(reaction: Reaction, user: Member):
 async def check_verified_count():
     # check every 60 minutes to see which users should be verified
     for (user_id, count) in enumerate(verification_db):
-        if count >= VERIFICATION_THRESHHOLD:
+        if count >= verification_threshold():
             member = bot.get_guild(1001876487059816542).get_member(user_id)
             member.add_roles([VERIFIED_ROLE_ID], reason=f"Verified after {count} agreements")
 
